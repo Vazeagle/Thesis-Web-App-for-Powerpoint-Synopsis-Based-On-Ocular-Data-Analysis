@@ -1,0 +1,13 @@
+http://web.tecnico.ulisboa.pt/~augusto.esteves/GazeTrack/	
+#EyeTracking library-executable no need to downlad the processing app.
+
+
+https://pyzmq.readthedocs.io/en/latest/api/zmq.html		
+#ZMQ library
+
+https://python-pptx.readthedocs.io/en/latest/dev/analysis/shp-pos-and-size.html
+https://stackoverflow.com/questions/66049158/finding-and-using-shape-position-python-pptx
+#PPTX library usage example and documentation
+
+http://polymathprogrammer.com/2009/10/22/english-metric-units-and-open-xml/
+#EMU For screen dpi measurement
