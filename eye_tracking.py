@@ -1,147 +1,39 @@
-from pptx import Presentation
 import pandas as pd
-import numpy as np
-import os
-import subprocess
 import zmq
-import tkinter
-import seaborn as sns
-import matplotlib.pyplot as plt
-from matplotlib import colors
-import psutil
-from pptx_run import *
+import time, os, shutil
+import csv
 
-#	Get resolution of screen
-root = tkinter.Tk()
-screen_width = root.winfo_screenwidth()
-screen_height = root.winfo_screenheight()
+#from pptx_run import *
 
-#	Get current working dir
-cwd = os.getcwd()
-print("Current working directory: ",cwd)
-TobiiStream = cwd + "/TobiiStream/TobiiStream.exe"
-print(TobiiStream)
+#signal.signal(signal.CTRL_C_EVENT, signal.default_int_handler)
 
-def findProcessIdByName(processName):
-    '''
-    Get a list of all the PIDs of a all the running process whose name contains
-    the given string processName
-    '''
-    listOfProcessObjects = []
-    #Iterate over the all the running process
-    for proc in psutil.process_iter():
-       try:
-           pinfo = proc.as_dict(attrs=['pid', 'name', 'create_time'])
-           # Check if process name contains the given name string.
-           if processName.lower() in pinfo['name'].lower() :
-               listOfProcessObjects.append(pinfo)
-       except (psutil.NoSuchProcess, psutil.AccessDenied , psutil.ZombieProcess) :
-           pass
-    return listOfProcessObjects;
+def recordOcularData(data):
+	#ADD IF FOLDER DOESNT EXIST CREATE IT
+	#filename=str(time.strftime('%Y-%m-%d %H:%M:%S'))+".csv"
+	#filepath="\\ocular_data_csv\\"+filename
+	
+	#zmq connection
+	ctx = zmq.Context()
+	s = ctx.socket(zmq.SUB)
+	s.connect("tcp://127.0.0.1:5556")
+	s.setsockopt_string(zmq.SUBSCRIBE,'TobiiStream')
 
-processID = None
-def startTobiiStream():
-	global processID
-	# Find PIDs od all the running instances of process that contains 'chrome' in it's name
-	listOfProcessIds = findProcessIdByName('TobiiStream')
-	if len(listOfProcessIds) > 0:
-		print('Process Exists | PID and other details are')
-		for elem in listOfProcessIds:
-			processID = elem['pid']
-			processName = elem['name']
-			#processCreationTime =  time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(elem['create_time']))
-			print((processID ,processName))
-	else :
-		print('No Running Process found with TobiiStream running')
-		#open the TobiiStream.exe
-		process = subprocess.Popen(TobiiStream, creationflags = subprocess.CREATE_NEW_CONSOLE)
-		processID = process.pid
+	#	DataFrame Initialization
+	dataSum = pd.DataFrame(columns=['Timestamp','GazeX','GazeY'])
 
-
-startTobiiStream()
-
-
-
-
-
-
-
-
-#	DataFrame Initialization
-dataSum = pd.DataFrame(columns=['Timestamp','GazeX','GazeY'])
-
-#zmq connection
-ctx = zmq.Context()
-s = ctx.socket(zmq.SUB)
-s.connect("tcp://127.0.0.1:5556")
-
-
-# Bound the X-axis values based on the screen resolution
-def reorganize_dataX( datax, width):
-	temp_list = list(map(lambda item: (float(item) + width), datax))
-	for index, elem in enumerate(temp_list):
-		if float(elem)>width:
-			temp_list[index] = width
-		elif float(elem)<0:
-			temp_list[index] = 0
-	temp_list=list(map(float, temp_list)) #convert to float for heatmap
-	return temp_list
-
-# Bound the Y-axis values based on the screen resolution
-def reorganize_dataY( datay, height):
-	temp_list = list(map(lambda item: (float(item) - height), datay))
-	for index, elem in enumerate(temp_list):
-		if float(elem)>0:
-			temp_list[index] = 0
-		elif float(elem)<-height:
-			temp_list[index] = -height
-	temp_list = list(map(lambda item: (float(abs(item))), temp_list))
-	temp_list=list(map(float, temp_list)) #convert to float for heatmap
-	return temp_list
-
-
-def registerData():
-	print("Done.")
-	print(dataSum)
-	dataX = dataSum['GazeX'].tolist()
-	dataY = dataSum['GazeY'].tolist()
-	print('datatypeforx', type(dataX[0]))
-
-
-	print("Re-Organize X....")
-	dataX = reorganize_dataX(dataX,screen_width)
-	print("Re-Organize Y....")
-	dataY = reorganize_dataY(dataY,screen_height)
-	print("width", screen_width)
-	print("height", screen_height)
-	print(dataSum)
-	dataSum['GazeX'] = dataX
-	dataSum['GazeY'] = dataY
-
-	#	remove timestamp for now because it's unnecessary maybe will use it later on for more info on gaze data
-	final_df = dataSum.drop('Timestamp', axis=1)
-	print(final_df)
-	return dataSum
-
-
-
-	#	Set Coordinates for X and Y axis and show heatmap.
-	#x = np.array(dataX)
-	#y = np.array(dataY)
-	#fig, ax = plt.subplots()
-	#ax.hist2d(x,y, bins=[np.arange(0,screen_width,1),np.arange(0,screen_height,1)],density=True)
-	#ax.set_title('Heatmap based on ocular data')
-	#plt.show() #print heatmap
-
-s.setsockopt_string(zmq.SUBSCRIBE,'TobiiStream')
-
-
-def main():
 	index = 0
 	result = None
+
+	header=['Timestamp','GazeX','GazeY']#BECAUSE WE CANT MAKE IT WORK WITH PARALLEL RUNNING DUE TO SOME LIBRARIES BUGS THIS WILL WORK INSTEAD!
+	with open('ocular_data.csv', 'w', encoding='UTF8',newline='') as f:
+		writer = csv.writer(f)
+		writer.writerow(header)
+		f.close()
+
 	try:
 		while True:
 			print("working!!!!!!!!!!")
+			print("TEST DATA IN FUNC:",data)
 			msg = s.recv()
 			print(msg)
 			# Split the (byte) message into 
@@ -153,35 +45,53 @@ def main():
 				dataSum.loc[index] = [timestamp, eyeX, eyeY] 
 				index+=1
 				#	check dataSum
-				print(dataSum)
-				print(TobiiStream)
+				print("Collectiong Ocular Data to dataframe")
+				print("INDEX: ",index)
+				with open('ocular_data.csv', 'a', encoding='UTF8',newline='') as f:
+					writer = csv.writer(f)
+					writer.writerow([timestamp,eyeX,eyeY])
+					f.close()
+				#dataSum.to_csv('raw_data.csv', index=False)# insert ot every!
+				#with open('document.csv','a') as fd:
+				#	fd.write(dataSum)
+				
 
-	except KeyboardInterrupt:#	Ctrl+C
+	#except InterruptedError:#	Ctrl+C
+	except KeyboardInterrupt:	#FOR SOME REASON IT DOESN'T NOT WORK!!!!!!
+		print("DataFrame: \n")
+		print(dataSum)
+		print("\n\n")
 		print("Register the Changes")
-		result = registerData()
-		gatherData(result)
+		print("wont work")
+		print("wont work")
+		print("wont work")
+		print("wont work")
+		print("wont work")
+		print("wont work")
+		print("wont work")
+		#time.sleep(10)
+		#result = registerData(dataSum)
+		#result.to_csv('raw_data.csv', index=False)
+		#sys.exit()	#CONTAINS DATAFRAME WITH THE OCULAR DATA WE NEED GazeX GazeY and Timestamp !!!!
+
+
+		#https://stackoverflow.com/questions/13024532/simulate-ctrl-c-keyboard-interrupt-in-python-while-working-in-linux
+		#SOS SOS SOS SOS SOSSOS REMOVE NEXT COMMENT TO WORK!!
+		#gatherData(result)
 		#print (result)
+def deleteOcularData():
+	filesLoc = os.getcwd()+"\\ocular_data_csv\\"
+	csvFiles = os.listdir(filesLoc)
+	for csv in csvFiles:
+		file_path = os.path.join(filesLoc, csvFiles)
+		print("file_path delete Ocular Data csv",file_path)
+		try:
+			if os.path.isfile(file_path) or os.path.islink(file_path):
+				os.unlink(file_path)
+			elif os.path.isdir(file_path):
+				shutil.rmtree(file_path)
+		except Exception as e:
+			print('Failed to delete %s. Reason: %s' % (file_path, e))
 
-		#yPixelStart = 1080
-		#yPixelEnd = 0
-		#xPixelStart = 0
-		#xPixelEnd = 1920
-		#objectData = result.loc[(result['GazeY'] <= yPixelStart) & (result['GazeY'] >= yPixelEnd) & (result['GazeX'] >= xPixelStart) & (result['GazeX'] <= xPixelEnd)]
-		#print("objData:",objectData)
-		#processID.terminate()
 
-
-main()
-
-
-
-
-###OLD VERSIONS
-#process = subprocess.Popen(TobiiStream)
-
-#testing
-#process = subprocess.Popen(TobiiStream, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags = subprocess.CREATE_NEW_CONSOLE)
-
-#process = subprocess.Popen(['C:\\windows\\system32\\cmd.exe', '/C', 'C:\Diplomatiki\TobiiStream\TobiiStream.exe'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags = subprocess.CREATE_NEW_CONSOLE)
-#process = subprocess.Popen(TobiiStream, stdout=subprocess.PIPE, creationflags = subprocess.CREATE_NEW_CONSOLE)
-#process = subprocess.Popen(['runas', '/noprofile', '/user:Administrator',tobiiBat], stdout=subprocess.PIPE, creationflags = subprocess.CREATE_NEW_CONSOLE)
+recordOcularData("testData")
