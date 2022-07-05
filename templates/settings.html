@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Settings</title>
+
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+
+  </head>
+
+  <body>
+
+    <div class="main">
+
+        <ul>
+            <li><a href="/sideNav">Home</a></li>
+            <li><a href="/files">Power Point Files</a></li>
+            <li><a href="/synopsisFiles">Synopsis Files</a></li>
+            {% if 'admin' in flag %}
+            <li><a href="/uploads">Upload Power Point</a></li>
+            {% endif %}
+            <li><a class="active" href="/settings">Settings</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/logout">Log Out</a></li>
+        </ul>
+
+        <div class="dashboard">
+            <h2>Please, select the percentage of the of the synopsis you want:</h2>
+            <p>Hint: The bigger the percentage the bigger the information on the synopsis(max amount 50%, minimum 10%)</p>
+            <h3 class="msg" id="settings_message">{{ msg }}</h3>
+            <h4 class="msg" id="error_settings_message">{{ error_msg }}</h4>
+            <form method="post">
+              <label for="settings">Settings:</label>
+              <select name="settings" id="settings">
+                <option value="" selected disabled hidden>Choose Percentage (%)</option>
+                <option value="10">10%</option>
+                <option value="20">20%</option>
+                <option value="30">30%</option>
+                <option value="40">40%</option>
+                <option value="50">50%</option>
+              </select>
+              <br><br>
+              <button id="confirm-settings-btn" type=submit class="settings-btn">Confirm</button>
+            </form>
+            </div>
+            
+        </div>
+
+    </div>
+    
+    </body>
+</html>
+

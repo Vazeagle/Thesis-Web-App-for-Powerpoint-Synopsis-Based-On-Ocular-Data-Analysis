@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
+  <script src="{{url_for('static', filename='js/signUp.js')}}"></script>
+
+  <head>
+    <title>Sign Up Page</title>
+  </head>
+
+  <body onload="message_load();">
+
+
+    <div class="header">
+
+      <!--Content before waves-->
+      <div class="inner-header flex">
+        <!--Just the logo.. Don't mind this-->
+        <h1>Welcome to Ez-Synopsis</h1>
+      </div>
+
+      <!--Waves Container-->
+      <div>
+        <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+        viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+        <defs>
+        <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+        </defs>
+        <g class="parallax">
+        <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7" />
+        <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
+        <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
+        <use xlink:href="#gentle-wave" x="48" y="7" fill="#fff" />
+        </g>
+        </svg>
+      </div>
+      <!--Waves end-->
+
+    </div>
+    <!--Header ends-->
+
+      <!--Content starts-->
+      <div class="content flex">
+        <h2>With Ez-Synopsis you can upload for free PowerPoint projects and get an automated synopsis based on Ocular Data Analysis.</h2>
+        <div class="msg" id="signup_message">{{ msg }}</div>
+        <form method="post">
+          <input id="username" name="username" type="text" placeholder="Username" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Username'" onkeyup='validate_usr();' required/>
+          <span class="verification" id='username_message'></span>
+
+          <input id="password" name="password" type="password" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'" onkeyup='validate_password();' required/>
+          <span class="verification" id='password_message'></span>
+
+          <input id="verify-password" type="password" placeholder="Verify Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Verify Password'" onkeyup='confirm_password();' required/>
+          <span class="verification" id='password_ver_message'></span>
+
+          <input id="email" name="email" type="email" placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'" onkeyup='validate_email();' required/>
+          <span class="verification" id='email_message'></span>
+          
+          <input id="verify-email" type="email" placeholder="Verify Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Verify Email'" onkeyup='confirm_email();' required/>
+          <span class="verification" id='email_ver_message'></span>
+          
+          <button id="signupbtn" type=submit class="signup-btn" disabled="disabled">Sign Up</button>
+        </form>
+
+        <div class="tacbox">
+          <input id="checkterms" type="checkbox" />
+          <label for="checkbox"> I agree to these <a href="#">Terms and Conditions.</a></label>
+        </div>
+      
+        <!--script for signup button enabling AND form input checking-->
+        <script src="{{url_for('static', filename='js/signUp.js')}}"></script>
+      
+        <div class="bottom-container">
+          <p>Already registered with us?</p><a href="/login">Log In!</a>
+        </div>
+      
+      </div>  
+      <!--Content ends-->
+
+      <div class="social">
+        <p></p>
+        <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+
+        <a class="icon-link round linkedin fill" href="https://gr.linkedin.com/in/stylianos-vazaios-28248321a" target="_blank">
+          <i class="fa fa-linkedin fa-3x"></i>
+        </a>
+        <a class="icon-link round github fill" href="https://github.com/Vazeagle" target="_blank">
+          <i class="fa fa-github fa-3x"></i>
+        </a>
+        <a class="icon-link round university fill" href="https://www.ceid.upatras.gr/en" target="_blank">
+          <i class="fa fa-university fa-3x"></i>
+        </a>
+      </div>
+
+  </body>
+
+</html>

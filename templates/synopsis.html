@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>PowerPoint Files</title>
+
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/files.css') }}">
+
+  </head>
+
+  <body>
+
+    <div class="main">
+
+        <ul>
+            <li><a href="/sideNav">Home</a></li>
+            <li><a class="active" href="/files">Power Point Files</a></li>
+            <li><a href="/synopsisFiles">Synopsis Files</a></li>
+            {% if 'admin' in flag %}
+            <li><a href="/uploads">Upload Power Point</a></li>
+            {% endif %}
+            <li><a href="/settings">Settings</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/logout">Log Out</a></li>
+        </ul>
+
+        <div class="dashboard">
+            <h2 class="msg" id="synopsis_message">{{ msg }}</h2>
+            
+        </div>
+
+    </div>
+    
+    </body>
+</html>
+

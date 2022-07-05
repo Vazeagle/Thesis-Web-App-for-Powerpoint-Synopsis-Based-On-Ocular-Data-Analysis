@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SideNav Placeholder</title>
+
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/sideNav.css') }}">
+
+  </head>
+
+  <body>
+
+    <div class="main">
+
+      <ul>
+        <li><a class="active" href="/">Home</a></li>
+        <li><a href="/files">Power Point Files</a></li>
+        <li><a href="/synopsisFiles">Synopsis Files</a></li>
+        {% if 'admin' in flag %}
+        <li><a href="/uploads">Upload Power Point</a></li>
+        {% endif %}
+        <li><a href="/settings">Settings</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/logout">Log Out</a></li>
+      </ul>
+
+      <div class="dashboard" >
+        
+        {% if 'admin' in flag %}
+        <h2 class="msg" id="login_message">{{ msg }}</h2>
+        <h3>This is a Web Application used to automatically create a synopsis of a powerpoint file based on ocular data analysis</h3>
+        <h3>How it works:</h3>
+        {% for row in pageData %}
+        <p> {{row}} </p>
+        {% endfor %}
+        <p>Step 1: As an Admin upload a PowerPoint File through the "Upload Power Point from the left navigation column."</p>
+        <p>Step 2: Verify that the upload was successful.</p>
+        <p>Step 3: Check users synopsis results of PowerPoints.</p>
+        <p>Optional Step 1: Navigate to "Settings" from the left navigation column and select the desired synopsis percentage(%) for you.</p>
+        <p>Optional Step 2: Create a Synopsis through the available PowerPoint Files.</p>
+        <p>Optional Step 3: View your Synopsis or the synopsis of the users.</p>
+        <h3>NOTES:</h3>
+        <p>Only Admins can upload PowerPoints.</p>
+        <p>For every new synopsis ypu create of a specific PowerPoint the old one will be replaced with the new.</p>
+        {% endif %}
+
+        {% if 'user' in flag %}
+        <h2 class="msg" id="login_message">{{ msg }}</h2>
+        <h3>This is a Web Application used to automatically create a synopsis of a powerpoint file based on ocular data analysis</h3>
+        <h3>How it works:</h3>
+        {% for row in pageData %}
+        <p> {{row}} </p>
+        {% endfor %}
+        <p>Step 1: Navigate to "Settings" from the left navigation column and select the desired synopsis percentage(%) for you</p>
+        <p>Step 2: Create a Synopsis through the available PowerPoint Files</p>
+        <p>Step 3: View and evaluate your Synopsis</p>
+        <p>Step 4: Complete the questionnaire given by the admin.</p>
+        <h3>NOTES:</h3>
+        <p>Only Admins can upload PowerPoints.</p>
+        <p>For every new synopsis you create of a specific PowerPoint the old one will be replaced with the new.</p>
+        {% endif %}
+      </div>
+
+    </div>
+    
+    </body>
+</html>
+

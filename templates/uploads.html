@@ -1,0 +1,49 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>PowerPoint Upload</title>
+
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/uploads.css') }}">
+
+  </head>
+
+  <body>
+
+    <div class="main">
+
+      <ul>
+        <li><a href="/sideNav">Home</a></li>
+        <li><a href="/files">Power Point Files</a></li>
+        <li><a href="/synopsisFiles">Synopsis Files</a></li>
+        {% if 'admin' in flag %}
+        <li><a class="active" href="/uploads">Upload Power Point</a></li>
+        {% endif %}
+        <li><a href="/settings">Settings</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/logout">Log Out</a></li>
+      </ul>
+
+      <div class="dashboard" >
+
+          <h2>Upload new File</h2>
+          <p>Please select a pptx file to upload to the server!</p>
+          <form method=post enctype=multipart/form-data>
+              <input type=file name=file accept=".pptx" multiple>
+              <input type=submit value=Upload>
+          </form>
+          <h3 class="msg" id="upload_fail">{{ msg_fail }}</h3>
+          {% for row in files_fail %}
+          <p> {{row}} </p>
+          {% endfor %}
+          <h3 class="msg" id="upload_success">{{ msg_success }}</h3>
+          {% for row in files_ok %}
+          <p> {{row}} </p>
+          {% endfor %}
+      </div>
+
+    </div>
+    
+    </body>
+</html>
+

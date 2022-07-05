@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Synopsis Files</title>
+
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/synopsisFiles.css') }}">
+
+  </head>
+
+  <body>
+
+    <div class="main">
+
+        <ul>
+            <li><a href="/sideNav">Home</a></li>
+            <li><a href="/files">Power Point Files</a></li>
+            <li><a class="active" href="/synopsisFiles">Synopsis Files</a></li>
+            {% if 'admin' in flag %}
+            <li><a href="/uploads">Upload Power Point</a></li>
+            {% endif %}
+            <li><a href="/settings">Settings</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/logout">Log Out</a></li>
+        </ul>
+
+        <div class="dashboard">
+            <h3>Please, select one of the following available Synopsis to view:</h3>
+            <p>Hint: Go full screen ("f11") before choosing a presentation for the best experience.</p>
+            <h4 class="msg" id="info_message">{{ msg }}</h4>
+            <div class="header">
+                {% for  key, value in files.items() %}
+
+                <li><a  href={{value}}>{{key}}</a></li>
+
+                {% endfor %}
+            </div> 
+        </div>
+
+    </div>
+    
+    </body>
+</html>
+

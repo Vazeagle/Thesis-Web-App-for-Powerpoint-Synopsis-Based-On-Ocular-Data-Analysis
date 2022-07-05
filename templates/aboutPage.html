@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SideNav Placeholder</title>
+
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/aboutPage.css') }}">
+
+  </head>
+
+  <body>
+
+    <div class="main">
+
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/files">Power Point Files</a></li>
+        <li><a href="/synopsisFiles">Synopsis Files</a></li>
+        {% if 'admin' in flag %}
+        <li><a href="/uploads">Upload Power Point</a></li>
+        {% endif %}
+        <li><a href="/settings">Settings</a></li>
+        <li><a class="active" href="/about">About</a></li>
+        <li><a href="/logout">Log Out</a></li>
+      </ul>
+
+      <div class="dashboard" >
+        
+        <h2>This is a Web Application created by Stylianos Vazaios in the context of his thesis "Creation of a Web appplication for automatic presentation summary based on users ocular data" used to automatically create a synopsis of a powerpoint file based on ocular data analysis</h2>
+        <h3>Used Technologies:</h3>
+        <p>In general python was used for almost everything, mostly the backend."</p>
+        <p>There are python scripts to connect with Tobii eyetracker and save the data on csv files based on the slide number</p>
+        <p>Also with python-pptx library for presentations and some "smart" functions we can get the precice location on a screen of the elements of the powerpoint like images textboxes groups, etc.</p>
+        <p>Python Flask was used to run the web server to show the html and css files and to connect to the created Database.</p>
+        <p>For the database XAMPP was used.</p>
+        <h3>NOTES:</h3>
+        <p>For any more information contact the creator vazaios.stylianos@gmail.com</p>
+
+      </div>
+
+    </div>
+    
+    </body>
+</html>
+
