@@ -6,7 +6,6 @@ from PIL import Image, ImageOps
 
 
 import matplotlib
-#matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -81,9 +80,5 @@ def create_heatmap(username, powerpointName):
         slideNumber= int(csv.rsplit('.', 1)[0])
         data_frame = fix_ocular_data(username,csv)
         plot_heatmap(slideNumber,username,powerpointName,data_frame)
-
-#https://stackoverflow.com/questions/50091591/plotting-seaborn-heatmap-on-top-of-a-background-picture
-
-#https://seaborn.pydata.org/generated/seaborn.kdeplot.html
 
 #create_heatmap("testuser12", "Blockchain_Presentation")

@@ -33,14 +33,6 @@ class PowerPointObject:
         self.objCounter = objCounter
 
     def focusDuration(self):
-        #-------------------------------------------------------------------------------------------SOS SOS SOS SOS SOS SOS SOS DELETE FROM HERE MAKE AN EXTERNAL FUNCTION FOR DIS!
-        #should use a try catch for the substraction just to be sure.
-        #duration = self.maxTimestamp - self.minTimestamp
-        duration=0
-        print("Duration of Focus on element: in ms", duration)
-        return duration
-
-    def focusDuration(self):
         #should use a try catch for the substraction just to be sure.
         duration = self.maxTimestamp - self.minTimestamp
         print("Duration of Focus on element: in ms", duration)

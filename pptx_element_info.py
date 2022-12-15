@@ -7,7 +7,6 @@ import numpy as np
 import os
 import tkinter
 from classes import *
-#from eye_tracking import *
 import json
 from PIL import ImageFont
 from PIL import Image as pil_img
@@ -31,7 +30,6 @@ def get_pil_text_size(text, font_size, font_name):  #using pillow get the size a
     print("font_name=",font_name)
     print("font_size=",font_size)
     print("cwd=",os.getcwd())
-    #fpath = os.getcwd()+"\\fonts\\"+font_name  #optional font folder
     font = ImageFont.truetype(font_name, font_size)
     size = list(font.getsize(text))
     #return in pixels and not in Pt
@@ -43,21 +41,6 @@ def get_pil_text_size(text, font_size, font_name):  #using pillow get the size a
 
 
 slide_dict = {} #hold slide objects with names for better vars.
-
-##Get Gaze Data
-##Occurrences of pptx object
-#def getGazeData(dataFrame, paragraphlines, xPixelStart, yPixelStart, lineHeight, LineMargin):   #paragraphlines is an array that has the width of the lines of a paragraph element inside a Textbox #AND ALSO bellow the loop happens for every par so all is ok!!!
-#    occurrences = 0
-#    yPixelEnd = yPixelStart - lineHeight - LineMargin
-#    for lineWidth in paragraphlines:
-#        xPixelEnd = xPixelStart + lineWidth
-#        print("getGazeData")
-#        objectData = dataFrame.loc[(dataFrame['GazeY'] <= yPixelStart) & (dataFrame['GazeY'] >= yPixelEnd) & (dataFrame['GazeX'] >= xPixelStart) & (dataFrame['GazeX'] <= xPixelEnd)]
-#        print("OCC",occurrences)
-#        print("DATAFRAMEC:\n",objectData)
-#        occurrences = len(objectData) + occurrences
-#    return occurrences
-#
 
 #   Convert emu(english metrix units) to pixels
 def emu_to_pixels(emuValue: int):
@@ -115,12 +98,13 @@ def getTextboxInfo(textboxShape):
         print("paragraph font Name:",  paragraph.font.name)         ############### NOT NEEDED WANT LOWER HIERARCHY
 
         print("Paragraph line spacing :",  paragraph.line_spacing)  ############### NOT NEEDED WANT LOWER HIERARCHY
-        print("THIS IS PRINT IN LINE 109!")
+
         ###---------------------------------------------------------------------------------------------------------
         ###---------------------------------------------------------------------------------------------------------
         ###---------------------------------------------------------------------------------------------------------
         ###---------------------------------------------------------------------------------------------------------
         #***************************This is added here beacuse of the subtitle element of the placeholder************************
+
         if paragraph.line_spacing is None: #beacause of negative values in lineSpacer in DB due to reading line_spacing as 0
             lineSpacing = 0 #default value is 1 that means no space between paragraphs, here we put 0 because it acts as a scale for yDistance variable
         else:
@@ -128,7 +112,7 @@ def getTextboxInfo(textboxShape):
         ###---------------------------------------------------------------------------------------------------------
         ###---------------------------------------------------------------------------------------------------------
         ###---------------------------------------------------------------------------------------------------------
-        #this will be used as a miltiplier, the space between paragraphs based on the font-height will be x times bigger
+        #this will be used as a multiplier, the space between paragraphs based on the font-height will be x times bigger
         access_flag=True    #NEW TO ENTER ONLY ONCE THE LINE SPACING
         for run in paragraph.runs:
             #We make a rule that only one font will be used in a paragraph or else there would be chaos
@@ -137,7 +121,6 @@ def getTextboxInfo(textboxShape):
             print("Run:", run)
             print("RunText:", run.text)
             if run.font.name is not None:
-                print("print hello!!!!!!!@@@#@#@#")
                 print("RUN: ",run)
                 print("run.font.name: ", run.font.name)
                 print("run.font.size: ", run.font.size)
@@ -227,18 +210,17 @@ def textbox(slideRes, slideNum, text_shape, group, objCounter, scaleMultiplier):
             #old version was ParToParDistance = space*yStep + (space+1)*(yStep*textBoxInfo["lineSpacing"])
             ParToParDistance = (space*yStep) + ((space*2)*(yStep*textBoxInfo["lineSpacing"])) #This will contain the space height based on the line and the two line spacings(top and bot) of the empty line/lines!!
             if ParToParDistance == 0:#if ParToParDistance is 0 because space=0 it meants that the paragraphs are one after an other
-                print("LMAO2",space)
                 ParToParDistance = 2 * (yStep*textBoxInfo["lineSpacing"]) # "1*" would only put us to the top side of the next line line spacing if we put "2*" we will have the text
             else:
-                print("fuckyouSpacing2",space)
                 print("ystep",yStep)
                 print("linespacing",textBoxInfo["lineSpacing"])
                 ParToParDistance = ParToParDistance + 2*(yStep*textBoxInfo["lineSpacing"]) #ADD bot linespace of previous line and also the top linespacing(of next line) to get the height where the next line text is if before there was a space line\lines
-                print("ParToParDistanceJUSTWTIHSPACES!",ParToParDistance - 2*(yStep*textBoxInfo["lineSpacing"]))
+                print("ParToParDistanceJustWithSpaces!",ParToParDistance - 2*(yStep*textBoxInfo["lineSpacing"]))
                 print("CorrectParToParDistance",ParToParDistance)
             space = 0 #re-initialize space between paragraphs
             ParToParDistanceList.append(ParToParDistance)
     ParToParDistanceList.append(0)#This value is needed for the last paragraph in order to be in bounds!!!!!!!
+
     ####------------------------------------------------------------------------------------------
     ####------------------------------------------------------------------------------------------
     ####------------------------------------------------------------------------------------------
@@ -271,7 +253,7 @@ def textbox(slideRes, slideNum, text_shape, group, objCounter, scaleMultiplier):
                 else:
                     parLinesWidth.append(realParWidth)
                 i+=1
-            print("PARA:",parLinesWidth)
+            print("parLinesWidth:",parLinesWidth)
 
             #Old version before malakia1821 was
             #  if par_counter==1 and space > 1:            
@@ -294,7 +276,6 @@ def textbox(slideRes, slideNum, text_shape, group, objCounter, scaleMultiplier):
                 ##########OMOIA FIX KAI THN ELSE APO KATW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 paragraphHeightStart = paragraphHeightStart - ParToParDistance # stores first paragraph beginning
                 nextParYstart = parHeight - 2*(yStep*textBoxInfo["lineSpacing"])+ ParToParDistanceList[par_counter] # we remove the bot of the linespacing of the current line beacause it's already sumed in ParToParDistanceList
-                print("malakia182156")
                 print("paragraphHeightStart:", paragraphHeightStart)
                 print("ParToParDistance:", ParToParDistance)
                 print("parHeight:", parHeight)
@@ -313,7 +294,6 @@ def textbox(slideRes, slideNum, text_shape, group, objCounter, scaleMultiplier):
                 else:
                     paragraphHeightStart = paragraphHeightStart - nextParYstart # stores each paragraph height start
                 ParToParDistance = ParToParDistanceList[par_counter]# this is the par to par distance that was calculated before!
-                print("malakia12")
                 print("ParToParDistanceList",ParToParDistanceList)
                 print("paragraphHeightStart:", paragraphHeightStart)
                 print("nextParYstart:", nextParYstart)
@@ -327,11 +307,9 @@ def textbox(slideRes, slideNum, text_shape, group, objCounter, scaleMultiplier):
                         
 
             #change to correct resolution
-            print("test")
             testingS = ScaleToScreenResolution(slideRes, ParToParDistanceList)
-            print("test")
             realHeight = parHeight-2*(yStep*textBoxInfo["lineSpacing"])
-            print("\nrealHeight before Conversion to Scale:",realHeight,"\n")
+            print("\nRealHeight before Conversion to Scale:",realHeight,"\n")
 
             realXaxisStartFinal = ScaleToScreenResolution(slideRes, realXaxisStart)
             realYaxisStart = ScaleToScreenResolution(slideRes, paragraphHeightStart)
@@ -437,10 +415,6 @@ def gatherData(powerpointPath, powerpointName):
                 for dict in textboxInfo[0]: #because the textbox function returns a list that contains dictionaries full with information from class objects methods
                     textbox_dict_list.append(dict)  #append dictionary with element info
                 objectCounter = textboxInfo[1]  #return element counter to increase correctly the counter
-                    
-
-            #print("TEXTBOXES INFO\n")
-            #print(shape_dict)
             
             #IF SHAPE IS A PICTURE
             if shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
@@ -449,17 +423,6 @@ def gatherData(powerpointPath, powerpointName):
                 objectCounter = pictureInfo[1] #return element counter to increase correctly the counter
                 print("This is an image")
 
-            #IF SHAPE IS A GROUP OF OTHER SHAPES(TEXT_BOX AND PICTURE)
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-            #SOS WE NEED TO CONNECT THE PICTURES WITH THE TEXT WITH SOME WAY MAYBE A SPECIFIC UNIQUE KEY
-            #I COULD CREATE A STORED PROCEDURE OR TRIGGER IN MYSQL DATABASE THAT WILL HANDLE THAT DATA.
-            #MAYBE DO THIS
-            #CREATE A NEW COLUMN IN THE TABLE OF THE SHAPES CALLED "CORELLATION_ID"
-            #AUTO TO ID THA DEIXNEI PALI PISW STO ID TOU OBJECT(EIKONA H KEIMENO POY EISIXTH PRWTO)
-            #OPOTE SE KA8E MIA EISAGWGH SUB-SHAPE TO EPOMENO PRAGMA EINAI CALL STHN DATABASE GIA TO ID TOU WSTE AUTO NA PAEI SAN CORELLATION ID STA EPOMENA
 
             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -469,7 +432,6 @@ def gatherData(powerpointPath, powerpointName):
                 groupName = group_counter
                 group_counter+=1
                 #this will work for simple 1st level grouping it wont iterate in the more inside groups!!!
-                #if we want to iterate more check the bellow link!!!!
                 for sub_shape in shape.shapes:
                     if sub_shape.shape_type == MSO_SHAPE_TYPE.TEXT_BOX: 
                         print("This is a TextBox")
@@ -482,7 +444,6 @@ def gatherData(powerpointPath, powerpointName):
                         pictureInfo = picture(powerpointName, slideResolution, slideNumber, sub_shape, groupName, objectCounter, scaleMultiplier)
                         picture_dict_list.append(pictureInfo[0])#append dictionary with element info
                         objectCounter = pictureInfo[1] #return element counter to increase correctly the counter
-            # https://stackoverflow.com/questions/51701626/how-to-extract-text-from-a-text-shape-within-a-group-shape-in-powerpoint-using
 
             if shape.shape_type == MSO_SHAPE_TYPE.PLACEHOLDER:
                 print("This is a PLACEHOLDER")
@@ -499,7 +460,6 @@ def gatherData(powerpointPath, powerpointName):
                             textbox_dict_list.append(dict)#append dictionary with element info
                         objectCounter = textboxInfo[1] #return element counter to increase correctly the counter
                 if phf.type == PP_PLACEHOLDER.PICTURE:
-                    #https://stackoverflow.com/questions/64903569/attributeerror-slideplaceholder-object-has-no-attribute-insert-picture
                     #HAS TO BE PICTURE-PLACEHOLDER IN ORDER TO WORK CORRECTLY!!
                     print("This is an Image inside a placeholder")
                     pictureInfo = picture(powerpointName, slideResolution, slideNumber, shape, None, objectCounter, scaleMultiplier)
@@ -507,22 +467,3 @@ def gatherData(powerpointPath, powerpointName):
                     objectCounter = pictureInfo[1] #return element counter to increase correctly the counter
             
     return textbox_dict_list, picture_dict_list, slide_dict_list
-
-
-
-#test dictionary with slide classes.
-#print("slide_dict: ",slide_dict)
-
-#test = slide_dict.values()
-#for class_elem in test:
-#    class_elem.getSlideNum()
-
-
-
-#TO DOOOOOOOOOOOOO
-
-#check ParToParDistance it saves wrong the data maybe use a list? or reverse the current par list!!!!
-
-#ABOUT TIMESTAMP MAYBE A FUNCTION TO SEE WHEN THE USER EYES GET OUT OF THE X,Y COORDINATES OF THE OBJECT AND THEN USE THIS TIMESTAMP AS MAX,
-#THEN CHECK WHEN AND IF HE REENTERS THIS OBJECT AND CRAETE A NEW MIN-MAX AFTER HE SEES OUTSIDE SO WHEN HE STOPS THE DIFF MAX-MIN WILL BE ADDED TO THE FINAL TIME TO SEE
-#HOW MUCH TIME THE USER HAS FOCUSED ON AN OBJECT

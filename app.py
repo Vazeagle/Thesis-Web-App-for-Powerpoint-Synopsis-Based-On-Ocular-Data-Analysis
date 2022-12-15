@@ -135,7 +135,6 @@ def login():
             if(data):
                 print(data['password'])
                 if(check_password_hash(data['password'],password)):
-                    print("SHEEEEESH")
                     session["name"] = data['userID']    #Insert session ID for current user!
                     if (data['role']== "admin"):  #if its an admin user loggin in
                         return render_template('sideNav.html', msg=" Welcome back " +data['username']+" !", pageData = [], flag=["admin"])  #pageData is a list that can contain strings to show to the html page
@@ -222,8 +221,6 @@ def upload_file():
                         if filename != '':  #this check is because secure_filename can return an empty filename
                             file_ext = os.path.splitext(filename)[1]
                             file_name = os.path.splitext(filename)[0]
-                            print("Sheeeeesh file ext",file_ext)
-                            print("Sheeeeesh file NAME",file_name)
                             if file_ext not in app.config['UPLOAD_EXTENSIONS']:
                                 data_fail.append(file)
                                 return render_template('uploads.html', msg_fail = "The following file upload is unsupported: "+ filename, files_fail = [], msg_success = "", files_ok = [])
@@ -240,17 +237,20 @@ def upload_file():
                                 data_ok.append(file)
                                 #htmlSlideCreation! call function!!
                                 res = html_slides_creator(save_path, file_name)
+
+
                                 #*****************************************************&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
                                 #*****************************************************&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
                                 #*****************************************************&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
                                 #*****************************************************&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
                                 #*****************************************************&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+
                                 #Check if file already exists if yes delete the old record and insert later the new one
                                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
                                 cursor.execute('SELECT powerpoint_name  FROM powerpoint_files WHERE powerpoint_name = % s ', (file_name, ))
                                 data_check= cursor.fetchone()
                                 cursor.close()
-                                print("SHEESH!",data)
                                 if(data_check is None): #if data is None
                                     #Insert Data to Database FOR powerpoint_files!!!!
                                     upload_date = time.strftime('%Y-%m-%d %H:%M:%S')
@@ -270,7 +270,7 @@ def upload_file():
                                     mysql.connection.commit()
                                     cursor.close()
                                 pptx_elements = gatherData(save_path, file_name) #pptx_elements is a list that contains two sub list the first one has as elements dictionaries of textbox class and the other dict of picture class
-                                print("SLIDES DICTIONARIES LIST: ",pptx_elements[2])
+                                print("Slides Dictionaries List: ",pptx_elements[2])
                                 #INSERT Picture ELEMENTS TO DB
                                 for class_dict in pptx_elements[2]:
                                     #Insert Data to Database!!!!
@@ -278,7 +278,7 @@ def upload_file():
                                     print("class_dict_pic: ", class_dict)
                                     cursor.execute('INSERT INTO slides(pptx_name, slide_number, slide_width, slide_height) VALUES (% s, % s, % s, % s)', (file_name, class_dict['slideNumber'], class_dict['width'], class_dict['height'], ))
                                     mysql.connection.commit()
-                                print("TEXTBOX DICTIONARIES LIST: ",pptx_elements[0])
+                                print("Textbox Dictionaries List: ",pptx_elements[0])
                                 #INSERT TEXT_BOXES ELEMENTS TO DB
                                 for class_dict in pptx_elements[0]:
                                     #Insert Data to Database!!!!
@@ -290,7 +290,7 @@ def upload_file():
                                     cursor.execute('INSERT INTO textbox_elements(pptx_name, slide_number, object_counter, textBoxXstart_no_margin, textBoxYstart_no_margin, textBoxWidth_no_margin, textBoxHeight_no_margin, objectCategory, parText, eachLineWidth, lineSpacer, lineSizeY, fontName, fontSize, marginLeft, marginRight, marginTop, marginBot, scaleMultiplier, groupID) VALUES (% s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s, % s)', (file_name, class_dict['slideNumber'], class_dict['objCounter'], class_dict['TextBoxXstart(removedMargin)'], class_dict['TextBoxYstart(removedMargin)'], class_dict['TextBoxWidth(removedMargin)'], class_dict['TextBoxHeight(removedMargin)'], class_dict['ObjectCategory'], class_dict['ParText'], eachLineWidth, class_dict['LineSpacer'], class_dict['LineSizeY'], class_dict['FontName'], class_dict['FontSize'], class_dict['MarginLeft'], class_dict['MarginRight'], class_dict['MarginTop'], class_dict['MarginBot'], class_dict['ScaleMultiplier'], class_dict['GroupID'], ))
                                     mysql.connection.commit()
                                     cursor.close()
-                                print("PICTURES DICTIONARIES LIST: ",pptx_elements[1])
+                                print("Pictures Dictionaries List: ",pptx_elements[1])
                                 #INSERT Picture ELEMENTS TO DB
                                 for class_dict in pptx_elements[1]:
                                     #Insert Data to Database!!!!
@@ -336,7 +336,7 @@ def get_files():
             slidesLoc = os.getcwd()+"/templates/slides/"
             slideNamesList = os.listdir(slidesLoc)
             killedPID = killTobiiStream()
-            print("killedPID: ", killedPID)
+            print("KilledPID: ", killedPID)
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('SELECT role FROM user WHERE userID = % s ', (session["name"], )) #another way of calling password
             data= cursor.fetchone()
@@ -381,7 +381,7 @@ def slides(folder,file,action):
 
         if (pid_info): #if list is not empty
             for pid in pid_info:
-                print("SOS SOS SOS SOS SOS SOS SOS SOS SOS PID: ",pid)
+                print("PID: ",pid)
                 pid[0].terminate()
                 #subprocess.Popen.kill(pid[1]) #This works!!!!
                 pid_info.clear()
@@ -413,35 +413,20 @@ def slides(folder,file,action):
             slide_screenshot(slideNumber, data["username"], correct_filename)
 
             print("FLASK SLIDENUMBER: ",slideNumber)
-            #slidesLoc = os.getcwd()+"\\templates\\slides\\"+correct_filename
-
-            #INSERT INTO ocular_data
-#            for eyeTracking_triplet in data_list:
-#                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-#                cursor.execute('INSERT INTO ocular_data(pptx_name, slide_number, username, coordinateID, Xcoordinates, Υcoordinates, Τimestamp, collection_date) VALUES (% s, % s, % s, % s, % s, % s, % s, % s)', (correct_filename, slideNumber, username, None, eyeTracking_triplet[1], eyeTracking_triplet[2], eyeTracking_triplet[0], time.strftime('%Y-%m-%d %H:%M:%S'), ))
-#                mysql.connection.commit()
-#                cursor.close()
             
             #Start again the eyetracking recording!
             res = start_recording_OcularData()
             print("AFTER THE FUNCTION start_recording_OcularData():", res)
-            print("ADD PID TO PID_INFO LIST!!!!")
+            print("Add PID TO PID_INFO LIST!!!!")
             pid_info.append(res)
 
         else:
             #First load of first slide start the recording of data
             res = start_recording_OcularData()
             print("AFTER THE FUNCTION start_recording_OcularData():", res)
-            print("ADD PID TO PID_INFO LIST!!!!")
+            print("Add PID TO PID_INFO LIST!!!!")
             pid_info.append(res)
-            #dataframe = fix_ocular_data()
 
-
-
-        #https://docs.python.org/3/library/multiprocessing.html#the-process-class
-
-        #print("Record_eye_process PID: ",processID)
-        #time.sleep(5)
         path = "slides/"+folder+"/"+file
         print("PATH variable",path)
         return render_template(path)
@@ -492,17 +477,12 @@ def synopsis(LastSlideName,status):
             slide_screenshot(slideNumber, dataRole["username"], correct_filename)
 
             print("FLASK SLIDENUMBER: ",slideNumber)
-            #slidesLoc = os.getcwd()+"\\templates\\slides\\"+correct_filename
-            
-
-                
+              
             #THIS BLOCK WILL HAVE A USE AS A REDIRECT SINCE WE NEED TO INFORM THE USER THAT THE SYNOPSIS
             #HAS STARTED AND THAT HE WILL HAVE TO WAIT TO GET THE RESULTS!!
             #SO WE CALL AGAIN THE SAME URL BUT WITH running as variable to enter the elif and start there the synopsis while having rendered the user a wait message
             #When the synopsis will finish the user will be redirected to the synopsis files
             message = "Please wait until the synopsis is finished and get automatically redirected to it!"
-            print("WEEEEEEEEEEEEEEEEEEEEEEEE!")
-            #https://stackoverflow.com/questions/53320037/python-redirect-with-delay
 
             #session.permanent = True #to be able to save session even after redirect to use it later
             if (role=="admin"):
@@ -568,9 +548,7 @@ def synopsis(LastSlideName,status):
 
                 for textbox_element in textbox_elements:
                     print("INSERTING TextBoxes")
-                    #widthList = textbox_element['eachLineWidth'].split(",")
-                    #width= [float(i) for i in widthList]
-                    #print("width:",width)
+
                     Textbox_occurrences = getGazeData(data_frame, textbox_element['eachLineWidth'].split(","), textbox_element['textBoxXstart_no_margin'], textbox_element['textBoxYstart_no_margin'], textbox_element['lineSizeY'], textbox_element['lineSpacer'])
                     
                     if Textbox_occurrences > 0:   #If the element was seen at least once  so occurrences based on eyetracking data > 1
@@ -645,7 +623,7 @@ def synopsis(LastSlideName,status):
             # SOS SOS SOS SOS SOS SOS SOS SOS SOS SOS SOS
             # SOS SOS SOS SOS SOS SOS SOS SOS SOS SOS SOS
             # SOS SOS SOS SOS SOS SOS SOS SOS SOS SOS SOS
-            #Have to sort these two with https://stackoverflow.com/questions/72899/how-do-i-sort-a-list-of-dictionaries-by-a-value-of-the-dictionary
+            #Sorted synopsis_data_list
             #and the use the objectCategory to insert either text or picture!
             #THEN:
             #check GROUP ID'S SINCE IF AN ID ISN'T IN THE SORTED LIST THIS EQUALS ERROR!!
@@ -659,19 +637,14 @@ def synopsis(LastSlideName,status):
             copy_csv(username,correct_filename)
             
             #Delete csv's after inserting data to database!---------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            #deleteOcularData()
+            deleteOcularData()
             
-
-            print("Hello World ITS ME AGAIN!")
-            #time.sleep(5)
-            print("I WOKE UP!!!!")
             return redirect(url_for('synopsisFiles'))
         
         elif(status=="cancel"):
             if(pid_info):
                 for pid in pid_info:
                     pid[0].terminate()
-                    #subprocess.Popen.kill(pid) #This works!!!!
                     print("Current PID KILLED because of user cancelation: ",pid)
                     pid_info.remove(pid)
 
@@ -690,7 +663,6 @@ def synopsis(LastSlideName,status):
             if(pid_info):
                 for pid in pid_info:
                     pid[0].terminate()
-                    #subprocess.Popen.kill(pid) #This works!!!!
                     print("Current PID KILLED because of unknown error! ",pid)
                     pid_info.remove(pid)
             message = "Unknown error please retry to create the synopsis!"
@@ -712,7 +684,7 @@ def synopsisFiles():
         return render_template('login.html',msg='Session Timed out please login again and try again')
     else:
         killedPID = killTobiiStream()
-        print("SYNOPSISFILES killedPID: ", killedPID)
+        print("SynopsisFiles killedPID: ", killedPID)
         
         #call db with userID and check if user is admin!!!!
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -721,7 +693,6 @@ def synopsisFiles():
         cursor.close()
         #IF USERID IS NOT THE ONE OF THE ADMIN ONLY MAKE VISIBLE THE ONES FOR EACH USER!
         #ADMIN CAN SEE ALL SYNOPSIS!
-        #ADD ELSE FOR ADMIN
         print(data['role'])
         if data['role'] != "admin":
             #Access specific user synopsis only!
@@ -825,8 +796,6 @@ def setttings():
             else:
                 return render_template('settings.html',msg='Current Percentage Value: '+ str(data['pptx_settings']), error_msg="", flag=["user"])
 
-#https://stackoverflow.com/questions/66880261/how-to-make-long-text-fit-into-a-text-frame-python-pptx
-
 
 @app.route('/about')
 def about():
@@ -858,7 +827,6 @@ def send_email():
 if __name__ == "__main__":
     app.debug=True
     app.run(host='localhost',port=5002)
-    #app.run(host='192.168.1.5',port=6002)
 
 # http://localhost:5002/
 

@@ -14,7 +14,7 @@ import mysql.connector
 
 def folderCheck(name, presentationName): #the data will be a list or a dict containing the objects that we need to insert to a powerpoint
     #CREATE SAVE FOLDER!
-    path=os.getcwd()+"\\synopsis\\"+name#we could use the session["name"] which is the userID for anonymity but because of the hash string it might be unreachable by the os beacuse of it's characters so we will use the username!
+    path=os.getcwd()+"\\synopsis\\"+name#we could use the session["name"] which is the userID for anonymity but because of the hash string it might be unreachable by the os beacause of it's characters so we will use the username!
     #if file not exists create it!
     if not os.path.exists(path):
         os.mkdir(path)
@@ -25,7 +25,6 @@ def folderCheck(name, presentationName): #the data will be a list or a dict cont
         print("Directory " , path ,  " already exists")
         print("User synopsis folder already exists!")
         filePath = path + "\\" + presentationName + ".pptx"
-        #file_exists = os.path.exists(filePath)
         if not os.path.exists(filePath):
             print("No old pptx synopsis exist proceed normal.")
             return True
@@ -43,23 +42,17 @@ def folderCheck(name, presentationName): #the data will be a list or a dict cont
 def select_prs_data(prsDataList, percentageValue):
     selectionVar = percentageValue/100
     data_size= len(prsDataList)
-    remove_elem = selectionVar*data_size    #IF IT IS <1 THE DO IT 1
+    remove_elem = selectionVar*data_size    #IF IT IS <1 THEN DO IT 1
     if remove_elem < 1:
         remove_elem = 1 #because of very small sample we will at least show one
-    #keep_data = int(data_size-remove_elem) # Maybe we need +1
-    #SOS SOS SOS SOS SOS SOS SOS MAYBE WE ONLY NEED THE remove_elem
 
-    print("TESTINGGGGGGG PERCENTACE GET")
     print("OLD DATA LIST:",prsDataList)
-    #print("NEW DATA LIST:",prsDataList[0:keep_data])
     print("Percentage:",selectionVar)
     print("data_size:",data_size)
     print("remove:",remove_elem)
 
     return prsDataList[0:int(remove_elem)]  #correct one maybe we could also do a round up if we want!
     
-    #SOS SOS FOR TESTING ONLY RETURN ALL NO REMOVAL
-    #return prsDataList
 
 def splitData(dataList):
     textbox_list = []
@@ -83,7 +76,7 @@ def slideCalculation(dataList):
     #   If we want we could add more functionality by searching the slides table of the DB and getting custom slides based on the elements
     #   of the slide that we have on synopsis creation!
     #   for our experiments we used only default(1280*720p) slides in order not to overcomplicate things so the pptx images and text will fit on 1280p slides
-    #   In other resolutions we should check for each element especialy pictures if it will fit in the default slide or not!
+    #   In other resolutions we should check for each element especially pictures if it will fit in the default slide or not!
 
     #root = tkinter.Tk()
     #screen_res = [root.winfo_screenwidth(), root.winfo_screenheight()]
@@ -102,7 +95,7 @@ def slideCalculation(dataList):
     listLength = len(dataList)
     for dict in dataList:
         scaleMultiplier = dict['scaleMultiplier']
-        print("\nscaleMultiplier!!!scaleMultiplier=",scaleMultiplier)
+        print("\nscaleMultiplier=",scaleMultiplier)
 
         lastListElement+=1
         while_flag+=1
@@ -116,7 +109,7 @@ def slideCalculation(dataList):
         elif(dict['objectCategory']=='PICTURE'):
             elementWidth = dict['pictureWidth']/scaleMultiplier
             elementHeight = dict['pictureHeight']/scaleMultiplier + 42   #5 pixles of the 30 are because of the top margin of the textboxes which is 0.13cm # +10 for safety restriction
-            print("PICTURE EL")
+            print("PICTURE Element")
 
         print("For loop")
         print("lastListElement ",lastListElement)
@@ -126,7 +119,6 @@ def slideCalculation(dataList):
         #so how many elements we will have on one page
         #also here rises a problem with one more check not to split the grouped elements!!!
 
-        #curElementVolume = elementWidth*elementHeight
         curElementVolume = elementHeight
         neededSlideVolume = curElementVolume + neededSlideVolume
 
@@ -196,8 +188,6 @@ def slideCalculation(dataList):
                         if(groupVolume > availabelSlideVolume):
                             print("******ERROR*********\nGROUP SIZE IS BIGGER THAN THE SLIDE SIZE!!!")
                             i = while_flag #to break the while
-                        #else:
-                        #here should be all the rest! 134-145
 
                         #add  these elements to neededSlideVolume for next slide calc
                         neededSlideVolume = neededSlideVolume + groupVolume #it's "+" instead of "-" because we get to a new slide and we don't care about the old one!
@@ -215,10 +205,7 @@ def slideCalculation(dataList):
                         slideChangeList.append(maxElementPerSlide_fix)#remove the groups that have to go with the overflowing element
                         print("check slideChangeList2",slideChangeList)
                         maxElementPerSlide = maxElementPerSlide-maxElementPerSlide_fix #to continue correctly for the next slide also we need -1
-                        
-                        #if lastListElement == listLength:#If it is the Last Element of the list insert in it.
-                        #    slideChangeList.append(maxElementPerSlide)
-                    
+                                          
                     i+=1 # increase counter i for while loop escape
                 print("WHILE_END")
                 #If there is not a group matching before this overflowed element simply change slide and put it there
@@ -228,9 +215,6 @@ def slideCalculation(dataList):
                     print("check slideChangeList3",slideChangeList)
                     maxElementPerSlide = 1 #Re-initialize it for new slide element counter
                     
-                    #if lastListElement == listLength:#If it is the Last Element of the list insert in it.
-                    #    slideChangeList.append(maxElementPerSlide)
-
             #ELSE GROUP OVERFLOW ID END
 
         #IF OVERFLOW END     
@@ -296,8 +280,6 @@ def groupCheck(dataList, pptxName):
                 #duplicate check list creation!
                 duplicateListCheck.append([pptxElement_dict['slide_number'],pptxElement_dict['groupID']])
 
-    #Maybe later add a sorting function based on the object_counter for these elements! it's not vital now but it could be a good feature other than just using the order by at the select queries!
-    #ALSO HAVE TO TAKE CHANCE ON GROUP OVERLAPPING SO IT WONT SHOW TWICE THE SAME THING! 
     return groupCorrectedList
 
 def synopsis_creation(username, presentationName, synopsisList): #the data will be a list or a dict containing the objects that we need to insert to a powerpoint
@@ -308,11 +290,6 @@ def synopsis_creation(username, presentationName, synopsisList): #the data will 
     synopsisHandler = slideCalculation(finalDictList) #slideChangeList, counterChange
     overflowCounter = synopsisHandler[1] 
     creationPath=os.getcwd()+"\\synopsis\\"+username+"\\"+presentationName + "_" + username + ".pptx"
-    #######SOS SOS SOS SOS SOS SOS SOS SOS SOS TO DO!!!!
-    #GIA NA MHN KANW POLLLA SELECT KAI APO TA DUO  TABLES GIA TEXTBOX KAI PICTURES
-    #NA BALW STO SYNOPSIS_DATA TABLE ENA NEO COLUMN POU NA LEEI THN PROELEUSH TOU- EIDOS TOU TEXT  H PICTURE
-    # KAI ANALOGA NA KALW TA SELECT GIA TA DEDOMENA GIA THN DHMIOURGIA NEOU PPTX!
-    #objectCategory
     
     list_idx=0
     slice_idx = synopsisHandler[0][0] #initial slice.
@@ -321,12 +298,6 @@ def synopsis_creation(username, presentationName, synopsisList): #the data will 
     blank_slide_layout = prs.slide_layouts[6] #no6 is blank slide
     #1 pixel= 0.0264583333 inches
     pixelToInch = 0.01041666666
-    #SOS SOS SOS SOS SOS SOS SOS -----------------------------------------------------------***************************************************//////////////////////////////
-    #ADD SCALE MULTIPLIER TO TEXTBOX_ELEMENTS IN DATABASE
-    #BECAUSE WE NEED IT FOR CORRECT INSERTION FOR FINAL SYNOPSIS
-    #FOR NOW I WILL ADD IT HARD CODED FOR RESOLUTION 1920*1080 AND SLIDE RES 1280*720p
-    #SO THE SCALE MULTIPLIER WOULD BE 0.5 in powerpoint this is 1.5lines.
-    #SOS SOS SOS SOS SOS SOS SOS -----------------------------------------------------------***************************************************//////////////////////////////
     textframe_flag = False
     #TextFrameYstart = 0#could be 0
     if(checkFolder):#Proceed with creating the synopsis file
@@ -342,17 +313,9 @@ def synopsis_creation(username, presentationName, synopsisList): #the data will 
             top = Inches(0)
             width = Inches(13) # 13 inches so that the textbox will be as big as the 1280p of the slide.
             height = Inches(0) #Inches(2)
-            
-            #textBox = slide.shapes.add_textbox(left, top, width, height)
-            #tf = textBox.text_frame
 
             print("NEW SLIDE CREATED, PROCEED WITH INSERTING")
-            #for pptxElementCounter in range(len(synopsisHandler[0])): # + 1 exist here because we need to take into account the first slide because synopsisHandler[0] is appened only on overflow
-            #    #MAYBE INSTEAD OF  len(synopsisHandler[0]) + 1) WE COULD USE len(synopsisHandler[1]))
-            #
-            #    print("LENGTH OF synopsisHandler[0]:",len(synopsisHandler[0]))
             elementListSlice = finalDictList[list_idx:slice_idx]
-            #elementListSlice.reverse()#reverse the list. The reverse() method doesn't return any value. It updates the existing list.
 
             for pptxElement_dict in elementListSlice: #list slicing! Slice finalDictList based on slideChange_list, reverse used because of the way the pars are inserted so that fistly the most important text will be in first line!
                 print("Insert into this slide")
@@ -423,15 +386,12 @@ def synopsis_creation(username, presentationName, synopsisList): #the data will 
                         tf.paragraphs[0].font.name = 'Calibri'
                         #tf.paragraphs[0].font.size.pt=12
                         tf.fit_text()
-                        #par = tf.add_paragraph()
-                        #par.text = pptxElement_dict["parText"]
                         eachLineWidth = pptxElement_dict['eachLineWidth'].split(",")
                         if isinstance(eachLineWidth, list): #If it is a LIST
                             print("Is Instance")
                             print("TextFrameYstart=",TextFrameYstart)
                             print("eachLineWidth",len(eachLineWidth))
                             print("pptxElement_dict['lineSizeY']",pptxElement_dict['lineSizeY']/pptxElement_dict['scaleMultiplier'])
-                            #textYheight = (pptxElement_dict['lineSizeY']/pptxElement_dict['scaleMultiplier'])*len(eachLineWidth) + pptxElement_dict['lineSpacer']*len(eachLineWidth)
                             textYheight = pptxElement_dict['lineSizeY']*len(eachLineWidth) + pptxElement_dict['lineSpacer']*len(eachLineWidth)
                             TextFrameYstart = TextFrameYstart + textYheight + 15   #5 pixles of the 30 are because of the top margin of the textboxes which is 0.13cm
                             print("TextFrameYstart AFTER=",TextFrameYstart)
@@ -444,10 +404,7 @@ def synopsis_creation(username, presentationName, synopsisList): #the data will 
                             print("TextFrameYstart AFTER=",TextFrameYstart)                            
 
                 #if it is picture
-                elif pptxElement_dict['objectCategory']=="PICTURE":
-                    #AN EINAI EIKONA THA THELOUME ENA SWITCH-FLAG COUNTER (0-1) WSTE STHN SYNEXEIA AN DIABASEI TEXTBOX STO IDIO SLIDE NA BALEI WS EIDODO NEW TEXT FRAME
-                    #WSTE NA MPORESEI NA BALEI EKEI MESA TA YPOLOIPA PARS GIA NA EXEI MIA LOGIKH SEIRA!
-                    # TO NEO TEXT FRAME THA MPEI ME BASH TA YSTEP TWN PROHGOUMENWN PARS SAN SYNOLO.
+                elif pptxElement_dict['objectCategory']=="PICTURE":                    
                     print("Inserting Picture")
                     print("cur workinf dir:",os.getcwd()+pptxElement_dict['imageLoc'])
 
@@ -474,36 +431,13 @@ def synopsis_creation(username, presentationName, synopsisList): #the data will 
                 print("slice_idx old",slice_idx)
                 print("LENGTH OF synopsisHandler[0]",len(synopsisHandler[0]))
                 slice_idx = synopsisHandler[0][slide_num+1] + list_idx
-                #slice_idx = synopsisHandler[0][slide_num+1] + list_idx# OVERFLOW ERROR
                 print("sliceStart:",list_idx)
-                print("slice_idx new",slice_idx)
-
-                
+                print("slice_idx new",slice_idx)  
 
         print("Elements Insertion Finished")
 
         prs.save(creationPath)# save the final synopsis file
 
-
-        # https://python-pptx.readthedocs.io/en/latest/user/text.html
-        # https://www.geeksforgeeks.org/creating-and-updating-powerpoint-presentations-in-python-using-python-pptx/
-        # https://python-pptx.readthedocs.io/en/latest/user/slides.html
-        # https://stackoverflow.com/questions/44275443/python-inserts-pictures-to-powerpoint-how-to-set-the-width-and-height-of-the-pi
-        
-        #https://pythonprogramming.altervista.org/inserting-an-image-in-powerpoint-with-python/
-        #https://towardsdatascience.com/creating-presentations-with-python-3f5737824f61
-        #https://stackoverflow.com/questions/62395983/how-to-create-a-text-shape-with-python-pptx
-        #https://python-pptx.readthedocs.io/en/latest/dev/analysis/shp-autofit.html
-
-        #SOS SOS SOS SOS MAYBE MOD THE slideCalculation based on the height of each element so to use a horizontal evaluation to be more precise!!!!
-        #Fit text to textbox also increase text box width!
-
-        #SOS FIX γραμματοσειρα στα textboxes να ειναι ίδια με αρψικα textboxes
-        # SUPER SOS SOS STO TextFrameYstart an h grammatoseira einai variable(διαφορα μεγεθη) τα πολυ μικρά μεγέθη μπορει να κάνουν overlap γιατι γινονται resize se 18αρια αλλα το  Y υπολογίζεται με το παλιο linesizeY
-        
-        #SOS FIX ΝΑ ΒΑΛΩ ΚΑΙ ΤΟ LINESPACING ΜΕΣΑ ΣΤΟΝ ΥΠΟΛΟΓΙΣΜΟ ΤΟΥ  HEIGHT STO CREATE_SYNOPSIS
-        #SOS INSERT SCALE MULTIPLIER TO DATABASE
-
     else:   #if check is False  we have to check for the fileName if it already exist then delete it and replace it with the new one
-        print("Sheeesh! FAILURE ON FILE")
+        print("FAILURE ON FILE")
 #http://127.0.0.1:5002/synopsis/bitconPresentation/running

@@ -2,16 +2,8 @@ import pandas as pd
 import zmq
 import csv
 
-#from pptx_run import *
-
-#signal.signal(signal.CTRL_C_EVENT, signal.default_int_handler)
-
 def recordOcularData(data):
-	#ADD IF FOLDER DOESNT EXIST CREATE IT
-	#filename=str(time.strftime('%Y-%m-%d %H:%M:%S'))+".csv"
-	#filepath="\\ocular_data_csv\\"+filename
-	
-	#zmq connection
+
 	ctx = zmq.Context()
 	s = ctx.socket(zmq.SUB)
 	s.connect("tcp://127.0.0.1:5556")
@@ -50,9 +42,6 @@ def recordOcularData(data):
 					writer = csv.writer(f)
 					writer.writerow([timestamp,eyeX,eyeY])
 					f.close()
-				#dataSum.to_csv('raw_data.csv', index=False)# insert ot every!
-				#with open('document.csv','a') as fd:
-				#	fd.write(dataSum)
 				
 
 	#except InterruptedError:#	Ctrl+C
@@ -68,15 +57,5 @@ def recordOcularData(data):
 		print("wont work")
 		print("wont work")
 		print("wont work")
-		#time.sleep(10)
-		#result = registerData(dataSum)
-		#result.to_csv('raw_data.csv', index=False)
-		#sys.exit()	#CONTAINS DATAFRAME WITH THE OCULAR DATA WE NEED GazeX GazeY and Timestamp !!!!
-
-
-		#https://stackoverflow.com/questions/13024532/simulate-ctrl-c-keyboard-interrupt-in-python-while-working-in-linux
-		#SOS SOS SOS SOS SOSSOS REMOVE NEXT COMMENT TO WORK!!
-		#gatherData(result)
-		#print (result)
 
 recordOcularData("testData")

@@ -1,6 +1,5 @@
 import pandas as pd
 from ocular_data_handler import *
-#SELECT slide_number, Xcoordinates, Υcoordinates, Τimestamp FROM `ocular_data` WHERE pptx_name='test2' AND username='vazaios' ORDER BY slide_number ASC;
 
 
 #Get Gaze Data
@@ -28,6 +27,3 @@ def getGazeData(dataFrame, paragraphlines, xPixelStart, yPixelStart, lineHeight,
         print("DATAFRAMEC:\n",objectData)
         occurrences = len(objectData) + occurrences
     return occurrences
-
-#IF IMAGE #getGazeData(df, width, image_loc["xAxisStart"], image_loc["yAxisStart"], image_loc["height"], 0)
-#IF TEXTBOX #getGazeData(df, parLinesWidth, realXaxisStart, realYaxisStart, yPixelStep, Pixelmargin)
